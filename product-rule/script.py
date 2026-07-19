@@ -1,6 +1,7 @@
 from manim import *
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.gtts import GTTSService
+from MF_Tools import TransformByGlyphMap
 
 BG = "#1C1C1C"
 BLUE = "#58C4DD"
@@ -222,89 +223,107 @@ class Scene3_Proof(VoiceoverScene):
         self.camera.background_color = BG
         self.set_speech_service(GTTSService(lang="en"))
 
-        # --- Title ---
+        # ── Title ──
         title = Text("Proof of the Product Rule", font_size=38, color=WHITE, font=MONO, weight=BOLD)
         title.to_edge(UP, buff=0.5)
 
-        # --- Step 1: Limit definition ---
+        # ══════════════════════════════════════════════
+        # PHASE 1: Setup (center column)
+        # ══════════════════════════════════════════════
+
+        # Step 1: Limit definition
         step1 = MathTex(
             r"(f \cdot g)'(x) = \lim_{h \to 0} \frac{f(x+h)\,g(x+h) - f(x)\,g(x)}{h}",
-            font_size=30
-        ).shift(UP * 1.5)
+            font_size=26
+        ).move_to(UP * 0.8)
 
-        # --- Step 2: Add and subtract f(x+h)g(x) ---
+        # Step 2: Add and subtract f(x+h)g(x)
         step2 = MathTex(
             r"= \lim_{h \to 0} \frac{f(x+h)\,g(x+h) - f(x+h)\,g(x) + f(x+h)\,g(x) - f(x)\,g(x)}{h}",
-            font_size=26
-        ).shift(UP * 0.3)
+            font_size=20
+        ).move_to(DOWN * 0.5)
 
-        highlight_box = SurroundingRectangle(
-            step2[0][37:72], color=YELLOW, buff=0.08, corner_radius=0.05, stroke_width=2
-        )
-        clever_note = Text("add and subtract", font_size=18, color=YELLOW)
-        clever_note.next_to(highlight_box, UP, buff=0.15)
+        # ══════════════════════════════════════════════
+        # PHASE 2-3: Colored fractions (right column)
+        # ══════════════════════════════════════════════
 
-        # --- Step 3: Two fractions ---
-        step3a = MathTex(
-            r"= \lim_{h \to 0} \left[",
-            font_size=30
-        ).shift(UP * 1.8)
-        step3b = MathTex(
+        # Right column center x
+        RX = RIGHT * 3.0
+
+        # "= lim_{h->0}" label for the right column
+        right_lim = MathTex(r"= \lim_{h \to 0}", font_size=24)
+        right_lim.move_to(RX + UP * 1.6)
+
+        # Step 3: Two fractions — standalone, NOT in VGroups
+        step3_blue = MathTex(
             r"\frac{f(x+h)\,g(x+h) - f(x+h)\,g(x)}{h}",
-            font_size=28, color=BLUE
-        ).next_to(step3a, RIGHT, buff=0.15)
-        step3c = MathTex(
-            r"+ \frac{f(x+h)\,g(x) - f(x)\,g(x)}{h} \right]",
-            font_size=28, color=GREEN
-        ).next_to(step3b, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 0.5)
+            font_size=22, color=BLUE
+        )
+        step3_green = MathTex(
+            r"+ \frac{f(x+h)\,g(x) - f(x)\,g(x)}{h}",
+            font_size=22, color=GREEN
+        )
 
-        # --- Step 4: Factor ---
-        step4a = MathTex(
-            r"= \lim_{h \to 0} \left[",
-            font_size=30
-        ).shift(UP * 1.8)
-        step4b = MathTex(
+        # Step 4: Factored — standalone, NOT in VGroups
+        step4_blue = MathTex(
             r"g(x) \cdot \frac{f(x+h) - f(x)}{h}",
-            font_size=28, color=BLUE
-        ).next_to(step4a, RIGHT, buff=0.15)
-        step4c = MathTex(
-            r"+ f(x+h) \cdot \frac{g(x+h) - g(x)}{h} \right]",
-            font_size=28, color=GREEN
-        ).next_to(step4b, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 0.5)
+            font_size=22, color=BLUE
+        )
+        step4_green = MathTex(
+            r"+ f(x+h) \cdot \frac{g(x+h) - g(x)}{h}",
+            font_size=22, color=GREEN
+        )
 
-        # --- Step 5: Limit result ---
+        # Position step3 fractions in the right column
+        step3_blue.move_to(RX + UP * 0.4)
+        step3_green.next_to(step3_blue, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        # Position step4 fractions at THE EXACT SAME spots as step3
+        step4_blue.move_to(step3_blue.get_center())
+        step4_green.move_to(step3_green.get_center())
+
+        # Group helpers for fadeout (no nesting that interferes with transforms)
+        left_col = VGroup(step1, step2)
+        right_fracs_3 = VGroup(step3_blue, step3_green)
+
+        # ══════════════════════════════════════════════
+        # PHASE 4: Result (center)
+        # ══════════════════════════════════════════════
+
         step5 = MathTex(
             r"= g(x) \cdot f'(x) + f(x) \cdot g'(x)",
-            font_size=34
-        ).shift(DOWN * 0.5)
-        step5[0][0:7].set_color(GREEN)    # g(x)
-        step5[0][8:13].set_color(BLUE)    # f'(x)
-        step5[0][14:19].set_color(BLUE)   # f(x)
-        step5[0][20:25].set_color(GREEN)  # g'(x)
+            font_size=32
+        )
+        step5[0][0:7].set_color(GREEN)
+        step5[0][8:13].set_color(BLUE)
+        step5[0][14:19].set_color(BLUE)
+        step5[0][20:25].set_color(GREEN)
+        step5.move_to(UP * 0.3)
 
-        # --- Final result ---
         final = MathTex(
             r"\boxed{(f \cdot g)' = f' \cdot g + f \cdot g'}",
-            font_size=38
-        ).shift(DOWN * 1.8)
+            font_size=36
+        )
         final[0][1:8].set_color(WHITE)
         final[0][9:12].set_color(BLUE)
         final[0][13:16].set_color(GREEN)
         final[0][17:20].set_color(BLUE)
         final[0][21:24].set_color(GREEN)
+        final.move_to(DOWN * 0.8)
 
-        qed = MathTex(r"\blacksquare", font_size=24, color=WHITE).next_to(final, RIGHT, buff=0.3)
+        qed = MathTex(r"\blacksquare", font_size=22, color=WHITE)
+        qed.next_to(final, RIGHT, buff=0.3)
 
-        # ========================
+        # ══════════════════════════════════════════════
         # ANIMATION SEQUENCE
-        # ========================
+        # ══════════════════════════════════════════════
 
-        # Title
+        # ── Title ──
         with self.voiceover("Now let us prove the product rule from the limit definition.") as tracker:
             self.play(Write(title), run_time=1.5)
             self.wait(0.5)
 
-        # Step 1
+        # ── Step 1: Limit definition (center) ──
         with self.voiceover(
             "By definition, the derivative of f times g is the limit as h approaches zero of "
             "f of x plus h times g of x plus h, minus f of x times g of x, all over h."
@@ -312,57 +331,62 @@ class Scene3_Proof(VoiceoverScene):
             self.play(Write(step1), run_time=2.5)
             self.wait(1.0)
 
-        # Step 2: The clever zero
+        # ── Step 2: The clever zero (center) ──
         with self.voiceover(
             "Here is the key trick. We add and subtract f of x plus h times g of x in the numerator."
         ) as tracker:
-            self.play(Write(step2), run_time=2.0)
-            self.play(Create(highlight_box), Write(clever_note), run_time=1.0)
+            self.play(FadeTransform(step1, step2), run_time=1.5)
             self.wait(2.0)
 
-        # Step 3: Two fractions
+        # ── Step 3: Two fractions (move left, show right column) ──
         with self.voiceover(
             "Now we regroup. This single fraction splits into two."
         ) as tracker:
+            # Move step2 to the left column and dim it
             self.play(
-                FadeOut(step2), FadeOut(highlight_box), FadeOut(clever_note),
-                run_time=0.5
+                step2.animate.shift(LEFT * 3.5).set_opacity(0.3),
+                run_time=1.0
             )
-            self.play(Write(step3a), Write(step3b), run_time=1.5)
-            self.play(Write(step3c), run_time=1.5)
+            # Show right column: lim label + two fractions
+            self.play(
+                FadeIn(right_lim, shift=DOWN * 0.3),
+                Write(step3_blue),
+                run_time=1.5
+            )
+            self.play(Write(step3_green), run_time=1.5)
             self.wait(1.0)
 
-        # Step 4: Factor
+        # ── Step 4: Factor (TransformByGlyphMap, in-place) ──
         with self.voiceover(
             "In the first fraction, we factor out g of x. "
             "In the second fraction, we factor out f of x plus h."
         ) as tracker:
             self.play(
-                ReplacementTransform(step3a, step4a),
-                ReplacementTransform(step3b, step4b),
-                ReplacementTransform(step3c, step4c),
-                run_time=2.0
+                TransformByGlyphMap(step3_blue, step4_blue, ([], []), show_indices=False, auto_fade=True, run_time=2.5),
+                TransformByGlyphMap(step3_green, step4_green, ([], []), show_indices=False, auto_fade=True, run_time=2.5),
             )
             self.wait(2.0)
 
-        # Step 5: Recognize the derivatives
+        # ── Step 5: Recognize the derivatives (merge to center) ──
         with self.voiceover(
             "As h approaches zero, the first fraction becomes f prime of x. "
             "The second fraction becomes g prime of x. "
             "And f of x plus h approaches f of x."
         ) as tracker:
+            # Fade everything from both columns
             self.play(
-                FadeOut(step4a), FadeOut(step4b), FadeOut(step4c),
-                run_time=0.5
+                FadeOut(step2), FadeOut(right_lim),
+                FadeOut(step4_blue), FadeOut(step4_green),
+                run_time=0.8
             )
             self.play(Write(step5), run_time=2.0)
             self.wait(2.0)
 
-        # Final result
+        # ── Final result ──
         with self.voiceover(
             "Therefore, the derivative of f times g is f prime times g, plus f times g prime."
         ) as tracker:
-            self.play(Write(final), run_time=1.5)
+            self.play(FadeTransform(step5, final), run_time=1.5)
             self.play(Write(qed), run_time=0.5)
             self.wait(3.0)
 

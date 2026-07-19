@@ -1,0 +1,15 @@
+# Rendered output
+product-rule/media/
+product-rule/final.mp4
+
+# Python virtualenv
+product-rule/.venv/
+
+# Manim cache
+media/
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db

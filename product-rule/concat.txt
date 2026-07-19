@@ -1,0 +1,4 @@
+file 'media/videos/script/1080p60/Scene1_DerivativeDefinition.mp4'
+file 'media/videos/script/1080p60/Scene2_ProductRuleStatement.mp4'
+file 'media/videos/script/1080p60/Scene3_Proof.mp4'
+file 'media/videos/script/1080p60/Scene4_Example.mp4'

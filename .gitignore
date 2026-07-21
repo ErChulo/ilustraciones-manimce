@@ -9,6 +9,22 @@ product-rule/.venv/
 media/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Audio files (can be regenerated)
+audio/
+
+# Video files (can be regenerated)
+*.mp4
+*.mp3
+
+# Temporary stitch files
+video_list.txt
+audio_list.txt
+combined_video.mp4
+combined_audio.mp3
 
 # OS files
 .DS_Store
